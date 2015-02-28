@@ -1,0 +1,32 @@
+#!/usr/bin/env perl
+use v5.10.0;
+use Imager::Screenshot 'screenshot';
+use Imager;
+use Getopt::Long;
+use Image::Imgur 'host';
+use HTTP::Request;
+use WWW::Curl::Simple;
+
+# Delay option that has the default value of 3 seconds
+my $delay = 3;
+# Output option that has the default output file of 'output.jpg'
+my $output = "output.jpg";
+# Upload option that says whether to upload the screenshot to imgur or not. Default is true
+#my $upload = 
+GetOptions('delay|d=i' => \$delay,
+	   'output|o=s' => \$output);
+
+say "Will take screenshot in $delay seconds...";
+sleep($delay);
+
+my $desktop = screenshot();
+
+$desktop->write(file => $output) or die $desktop->errstr;
+
+my $clientid = "8606b5c56225c40";
+my $req = HTTP::Request->new(GET => 'https://api.imgur.com/3/image');
+$req->header("Authentication" => "Client-ID $clientid");
+my $curl = WWW::Curl::Simple->new();
+my $res = $curl->get($req);
+say "Screenshot saved to $output and uploaded to $url";
+say "$res";
